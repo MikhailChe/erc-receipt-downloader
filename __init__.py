@@ -74,13 +74,15 @@ class LastReceipt:
     def get_last_content(self):
         last_path = self.get_last()
         if not last_path:
-            return False
+            return None
         last_file_name = os.path.join(self.directory, last_path)
         with open(last_file_name, 'rb') as f:
             return f.read()
 
     def same_as_last(self, content):
         last = self.get_last_content()
+        if not last:
+            return False
         log.debug('Compare current receipt to last one')
         log.debug('Last: size: %s, type: %s; New size: %s, type %s',
                   len(last),
