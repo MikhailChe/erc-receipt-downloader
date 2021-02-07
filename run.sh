@@ -1,3 +1,5 @@
-source env/bin/activate
-source config.sh
-python __init__.py
+#!/usr/bin/env bash
+
+set -ex
+. config.sh
+./env/bin/python __init__.py
