@@ -4,6 +4,7 @@ import logging.config
 import os
 import sys
 from datetime import date
+from time import sleep, time
 
 import requests
 
@@ -29,6 +30,34 @@ class ERC:
 
         session = requests.session()
         self._session = session
+        self._last_finished_at = None
+        self._min_between_requests_pause = 2.
+
+    def _rate_limit(self):
+        if self._last_finished_at is None:
+            return
+        already_delayed_for = time() - self._last_finished_at
+        if already_delayed_for >= self._min_between_requests_pause:
+            return
+        delay = self._min_between_requests_pause - already_delayed_for
+        sleep(delay)
+
+    def _request_finished(self):
+        self._last_finished_at = time()
+
+    def _post(self, *args, **kwargs):
+        try:
+            self._rate_limit()
+            return self._session.post(*args, **kwargs)
+        finally:
+            self._request_finished()
+
+    def _get(self, *args, **kwargs):
+        try:
+            self._rate_limit()
+            return self._session.get(*args, **kwargs)
+        finally:
+            self._request_finished()
 
     def login(self):
         # Pretend we are Chrome. Dont think it's really needed, but yet
@@ -41,12 +70,13 @@ class ERC:
             'username': self._login,
             'password': self._password,
         }
-        self._session.post(ERC._LOGIN_URL_, headers=login_headers, data=login_form)
+
+        self._post(ERC._LOGIN_URL_, headers=login_headers, data=login_form)
         log.debug('Logged in to ERC')
 
     def get_receipt(self, contract):
         log.debug('Getting receipt for contract %s', contract)
-        return self._session.get(ERC._RECEIPT_URL_TEMPLATE_.format(contract)).content
+        return self._get(ERC._RECEIPT_URL_TEMPLATE_.format(contract)).content
 
 
 class LastReceipt:
@@ -160,6 +190,8 @@ def main():
 
     erc_client = ERC(ERC_LOGIN, ERC_PASSWORD)
     erc_client.login()
+    # rate limiting
+    sleep(1)
 
     today = date.today()
 
