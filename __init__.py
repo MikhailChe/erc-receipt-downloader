@@ -163,13 +163,15 @@ def main():
 
     today = date.today()
 
+    log.info('Getting receipts for: raw: %s, parsed: %s', _contract_numbers_, ERC_CONTRACT_NUMBERS)
+
     for contract in ERC_CONTRACT_NUMBERS:
         try:
             content = erc_client.get_receipt(contract)
             last_receipt_provider = LastReceipt(contract)
             if last_receipt_provider.same_as_last(content):
                 log.info('Downloaded receipt is same as last one, no need to update')
-                break
+                continue
 
             filename = '{}.pdf'.format(today.strftime('%Y-%m-%d'))
             receipt_path = os.path.join(contract, filename)
