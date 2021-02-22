@@ -19,6 +19,8 @@ ERC_CONTRACT_NUMBERS = _contract_numbers_.split(',')
 
 LOG_PATH = os.getenv('LOG_PATH', default='logs')
 
+DATA_DIRECTORY = os.getenv('ERC_DATA_DIR', './data')
+
 
 class ERC:
     _RECEIPT_URL_TEMPLATE_ = 'https://lk.erc-ekb.ru/erc/client/private_office/private_office.htp?receipt={}&quitance'
@@ -199,16 +201,17 @@ def main():
     log.info('Getting receipts for: raw: %s, parsed: %s', _contract_numbers_, ERC_CONTRACT_NUMBERS)
 
     for contract in ERC_CONTRACT_NUMBERS:
+        contract_data_dir = os.path.join(DATA_DIRECTORY, contract)
         try:
             content = erc_client.get_receipt(contract)
-            last_receipt_provider = LastReceipt(contract)
+            last_receipt_provider = LastReceipt(contract_data_dir)
             if last_receipt_provider.same_as_last(content):
                 log.info('Downloaded receipt is same as last one, no need to update')
                 continue
 
             filename = '{}.pdf'.format(today.strftime('%Y-%m-%d'))
-            receipt_path = os.path.join(contract, filename)
-            os.makedirs(contract, exist_ok=True)
+            receipt_path = os.path.join(contract_data_dir, filename)
+            os.makedirs(contract_data_dir, exist_ok=True)
             with open(receipt_path, 'wb') as f:
                 f.write(content)
             last_receipt_provider.update_last(filename)
