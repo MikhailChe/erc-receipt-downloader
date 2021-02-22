@@ -130,6 +130,7 @@ class LastReceipt:
         last_struct = None
         try:
             last_struct = self._get_last()
+            last_struct['last_name'] = filename
         except:
             last_struct = {'last_name': filename}
         finally:
