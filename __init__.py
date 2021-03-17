@@ -146,18 +146,10 @@ def configure_logging():
     os.makedirs(LOG_PATH, exist_ok=True)
     logging.config.dictConfig({
         'version': 1,
-        'disable_existing_loggers': True,
-        'loggers': {
-            '': {
-                'handlers': ['console', 'file'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
-            'root': {
-                'handlers': ['console', 'file'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
+        'disable_existing_loggers': False,
+        'root': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
         },
         'formatters': {
             'simple': {
