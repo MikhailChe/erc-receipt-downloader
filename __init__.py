@@ -153,17 +153,17 @@ def configure_logging():
             '': {
                 'handlers': ['console', 'file'],
                 'level': 'DEBUG',
-                'propagate': False,
+                'propagate': True,
             },
             '__main__': {
                 'handlers': ['console', 'file'],
                 'level': 'DEBUG',
-                'propagate': False,
+                'propagate': True,
             },
             'root': {
                 'handlers': ['console', 'file'],
                 'level': 'DEBUG',
-                'propagate': False,
+                'propagate': True,
             },
         },
         'formatters': {
