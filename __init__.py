@@ -7,6 +7,9 @@ from datetime import date
 from time import sleep, time
 
 import requests
+import telebot
+
+from library.telegram import send_message, send_document
 
 log = logging.getLogger(__name__)
 
@@ -207,6 +210,7 @@ def main():
             last_receipt_provider = LastReceipt(contract_data_dir)
             if last_receipt_provider.same_as_last(content):
                 log.info('Downloaded receipt is same as last one, no need to update')
+                send_message('Ничего нового для {}'.format(contract))
                 continue
 
             filename = '{}.pdf'.format(today.strftime('%Y-%m-%d'))
@@ -216,7 +220,8 @@ def main():
                 f.write(content)
             last_receipt_provider.update_last(filename)
             log.info('Successfully downloaded receipt to a file %s', receipt_path)
-            # TODO: insert some callbacks here to send TG notification
+            send_message('Квитанция {}'.format(contract))
+            send_document(receipt_path, '{} {}'.format(contract, filename))
         except:
             log.exception('Error managing receipt %s', contract)
 
