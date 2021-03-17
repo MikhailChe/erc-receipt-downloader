@@ -7,7 +7,6 @@ from datetime import date
 from time import sleep, time
 
 import requests
-import telebot
 
 from library.telegram import send_message, send_document
 
@@ -144,18 +143,12 @@ class LastReceipt:
 
 
 def configure_logging():
-    global log
     os.makedirs(LOG_PATH, exist_ok=True)
     logging.config.dictConfig({
         'version': 1,
         'disable_existing_loggers': True,
         'loggers': {
             '': {
-                'handlers': ['console', 'file'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
-            '__main__': {
                 'handlers': ['console', 'file'],
                 'level': 'DEBUG',
                 'propagate': True,
@@ -188,7 +181,6 @@ def configure_logging():
             }
         }
     })
-    log = logging.getLogger(__name__)
 
 
 def main():
